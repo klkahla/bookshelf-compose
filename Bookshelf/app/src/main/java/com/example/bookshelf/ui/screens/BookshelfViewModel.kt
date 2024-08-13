@@ -1,4 +1,4 @@
-package com.example.bookshelf.screens
+package com.example.bookshelf.ui.screens
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf

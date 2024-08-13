@@ -1,6 +1,6 @@
 @file:OptIn(ExperimentalMaterial3Api::class)
 
-package com.example.bookshelf.screens
+package com.example.bookshelf.ui.screens
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
@@ -104,6 +104,8 @@ fun BookList(bookshelfUIState: BookshelfUIState, searchTerm: String, onSearchTer
 
 @Composable
 fun BookCard(book: Book, modifier: Modifier = Modifier) {
+    val thumbnailsUrl = book.volumeInfo?.imageLinks?.thumbnail?.replace("http://", "https://")
+
     Card (
         modifier = Modifier.padding(8.dp),
         shape = RoundedCornerShape(4.dp)
@@ -112,7 +114,7 @@ fun BookCard(book: Book, modifier: Modifier = Modifier) {
             AsyncImage(
                 modifier = Modifier.fillMaxWidth(),
                 model = ImageRequest.Builder(context = LocalContext.current)
-                    .data(book.volumeInfo?.imageLinks?.thumbnail)
+                    .data(thumbnailsUrl)
                     .crossfade(true)
                     .build(),
                 contentDescription = null,
