@@ -15,6 +15,8 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Button
@@ -47,6 +49,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
@@ -56,9 +59,15 @@ import com.example.bookshelf.model.ImageLinks
 import com.example.bookshelf.model.VolumeInfo
 import com.example.bookshelf.ui.theme.BookshelfTheme
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BookshelfApp(modifier: Modifier = Modifier) {
     val navController = rememberNavController()
+    val currentBackStackEntry by navController.currentBackStackEntryAsState()
+    val showBackButton = currentBackStackEntry?.destination?.route != "bookList"
+    val bookshelfViewModel: BookshelfViewModel = viewModel(factory = BookshelfViewModel.Factory)
+    var searchTerm by remember {mutableStateOf("")}
+
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         topBar = {
@@ -69,6 +78,13 @@ fun BookshelfApp(modifier: Modifier = Modifier) {
                         style = MaterialTheme.typography.headlineMedium
                     )
                 },
+                navigationIcon = {
+                    if (showBackButton) {
+                        IconButton(onClick = { navController.popBackStack() }) {
+                            Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                        }
+                    }
+                }
             )
         }
     ) {
@@ -78,27 +94,28 @@ fun BookshelfApp(modifier: Modifier = Modifier) {
                 .padding(it),
             color = MaterialTheme.colorScheme.background
         ) {
-            val bookshelfViewModel: BookshelfViewModel = viewModel(factory = BookshelfViewModel.Factory)
-            var searchTerm by remember {mutableStateOf("")}
-
             NavHost(navController = navController, startDestination = "bookList") {
                 composable("bookList") {
                     BookList(
-                        navController = navController,
                         bookshelfViewModel.bookshelfUIState,
                         searchTerm = searchTerm,
                         onSearchTermChanged = {
                             searchTerm = it
                             bookshelfViewModel.getBookshelf(it)
                         },
-                        retryAction = bookshelfViewModel::getBookshelf
+                        retryAction = bookshelfViewModel::getBookshelf,
+                        onBookClick = { bookId ->
+                            navController.navigate("bookDetail/$bookId")
+                        },
                     )
                 }
                 composable("bookDetail/{bookId}") { backStackEntry ->
                     val bookId = backStackEntry.arguments?.getString("bookId", "-1").toString()
                     val book = bookshelfViewModel.getBookById(bookId)
                     if (book != null) {
-                        BookDetail(book = book)
+                        BookDetail(
+                            book = book
+                        )
                     }
                 }
             }
@@ -108,15 +125,15 @@ fun BookshelfApp(modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun BookList(navController: NavHostController, bookshelfUIState: BookshelfUIState, searchTerm: String, onSearchTermChanged: (String) -> Unit, retryAction: (String) -> Unit, modifier: Modifier = Modifier) {
+fun BookList(bookshelfUIState: BookshelfUIState, searchTerm: String, onSearchTermChanged: (String) -> Unit, retryAction: (String) -> Unit, onBookClick: (String) -> Unit, modifier: Modifier = Modifier) {
     Column {
         SearchView(searchTerm, onSearchTermChanged)
         when (bookshelfUIState) {
             is BookshelfUIState.Loading -> LoadingScreen(modifier)
             is BookshelfUIState.Error -> ErrorScreen(retryAction = retryAction, modifier)
             is BookshelfUIState.Success -> ResultScreen(
-                navController = navController,
                 bookshelfUIState.bookshelfList,
+                onBookClick = onBookClick,
                 modifier
             )
         }
@@ -124,13 +141,13 @@ fun BookList(navController: NavHostController, bookshelfUIState: BookshelfUIStat
 }
 
 @Composable
-fun BookCard(book: Book, navController: NavHostController, modifier: Modifier = Modifier) {
+fun BookCard(book: Book, onBookClick: (String) -> Unit, modifier: Modifier = Modifier) {
     val thumbnailsUrl = book.volumeInfo?.imageLinks?.thumbnail?.replace("http://", "https://")
 
     Card (
         modifier = Modifier
             .padding(8.dp)
-            .clickable { navController.navigate("bookDetail/${book.id}") }
+            .clickable { onBookClick(book.id) }
         ,
         shape = RoundedCornerShape(4.dp)
     ) {
@@ -174,7 +191,7 @@ fun LoadingScreen(modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun ResultScreen(navController: NavHostController, bookList: List<Book>, modifier: Modifier = Modifier) {
+fun ResultScreen(bookList: List<Book>, onBookClick: (String) -> Unit, modifier: Modifier = Modifier) {
     LazyVerticalGrid(
         columns = GridCells.Fixed(2),
         verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.padding_small)),
@@ -184,7 +201,7 @@ fun ResultScreen(navController: NavHostController, bookList: List<Book>, modifie
         items(bookList) { book ->
             BookCard(
                 book = book,
-                navController = navController
+                onBookClick = onBookClick
             )
         }
     }
@@ -260,6 +277,6 @@ fun ResultScreenPreview() {
                 )
             )
         }
-        ResultScreen(NavHostController(LocalContext.current),mockData, Modifier.fillMaxSize())
+        ResultScreen(mockData, {}, Modifier.fillMaxSize())
     }
 }
