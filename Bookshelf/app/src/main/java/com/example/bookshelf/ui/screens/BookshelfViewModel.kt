@@ -46,6 +46,14 @@ class BookshelfViewModel(private val bookshelfRepository: BookshelfRepository): 
         }
     }
 
+    fun getBookById(bookId: String): Book? {
+        return if (bookshelfUIState is BookshelfUIState.Success) {
+            (bookshelfUIState as BookshelfUIState.Success).bookshelfList.find { it.id == bookId }
+        } else {
+            null
+        }
+    }
+
     /**
      * Factory for [BookshelfViewModel] that takes [BookshelfRepository] as a dependency
      */
