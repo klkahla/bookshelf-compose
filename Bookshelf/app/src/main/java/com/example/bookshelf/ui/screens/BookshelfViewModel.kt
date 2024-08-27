@@ -37,6 +37,14 @@ class BookshelfViewModel(private val bookshelfRepository: BookshelfRepository): 
         viewModelScope.launch {
             bookshelfUIState = BookshelfUIState.Loading
             bookshelfUIState = try {
+                val books = bookshelfRepository.getBookshelf(searchTerm)
+                val authors: MutableList<String> = mutableListOf()
+                books.forEach {
+                    it.volumeInfo?.authors?.let { listOfAuthors ->
+                        authors.addAll(listOfAuthors)
+                    }
+                }
+                println("authors: $authors")
                 BookshelfUIState.Success(bookshelfRepository.getBookshelf(searchTerm))
             } catch (e: IOException) {
                 BookshelfUIState.Error

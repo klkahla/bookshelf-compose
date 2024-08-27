@@ -6,6 +6,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -16,8 +17,8 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
@@ -46,7 +47,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -127,7 +127,7 @@ fun BookshelfApp(modifier: Modifier = Modifier) {
 @Composable
 fun BookList(bookshelfUIState: BookshelfUIState, searchTerm: String, onSearchTermChanged: (String) -> Unit, retryAction: (String) -> Unit, onBookClick: (String) -> Unit, modifier: Modifier = Modifier) {
     Column {
-        SearchView(searchTerm, onSearchTermChanged)
+        SearchAndFilterView(searchTerm, onSearchTermChanged, {})
         when (bookshelfUIState) {
             is BookshelfUIState.Loading -> LoadingScreen(modifier)
             is BookshelfUIState.Error -> ErrorScreen(retryAction = retryAction, modifier)
@@ -208,40 +208,65 @@ fun ResultScreen(bookList: List<Book>, onBookClick: (String) -> Unit, modifier: 
 }
 
 @Composable
-fun SearchView(searchTerm: String, onSearchTermChanged: (String) -> Unit, modifier: Modifier = Modifier) {
-    OutlinedTextField(
-        value = searchTerm,
-        onValueChange = onSearchTermChanged,
-        modifier = Modifier.fillMaxWidth(),
-        leadingIcon = {
-            Icon(
-                Icons.Default.Search,
-                contentDescription = "",
-                modifier = Modifier
-                    .padding(15.dp)
-                    .size(24.dp)
-            )
-        },
-        trailingIcon = {
-            if (searchTerm.isNotEmpty()) {
-                IconButton(
-                    onClick = {
-                        onSearchTermChanged("")
+fun SearchAndFilterView(
+    searchTerm: String,
+    onSearchTermChanged: (String) -> Unit,
+    onFilterClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Row(modifier = modifier.fillMaxWidth()) {
+        OutlinedTextField(
+            value = searchTerm,
+            onValueChange = onSearchTermChanged,
+            modifier = Modifier.weight(1f),
+            leadingIcon = {
+                Icon(
+                    Icons.Default.Search,
+                    contentDescription = "",
+                    modifier = Modifier
+                        .padding(15.dp)
+                        .size(24.dp)
+                )
+            },
+            trailingIcon = {
+                if (searchTerm.isNotEmpty()) {
+                    IconButton(
+                        onClick = {
+                            onSearchTermChanged("")
+                        }
+                    ) {
+                        Icon(
+                            Icons.Default.Close,
+                            contentDescription = "",
+                            modifier = Modifier
+                                .padding(15.dp)
+                                .size(24.dp)
+                        )
                     }
-                ) {
-                    Icon(
-                        Icons.Default.Close,
-                        contentDescription = "",
-                        modifier = Modifier
-                            .padding(15.dp)
-                            .size(24.dp)
-                    )
                 }
+            },
+            singleLine = true,
+            shape = RectangleShape, // The TextFiled has rounded corners top left and right by defaul
+        )
+        IconButton(onClick = onFilterClick) {
+            Icon(Icons.Default.Menu, contentDescription = "Filter")
+        }
+    }
+}
+
+@Composable
+fun FilterDrawer(authors: List<String>, onAuthorSelected: (String) -> Unit) {
+    Column(modifier = Modifier.padding(16.dp)) {
+        Text(text = "Filter by Author", style = MaterialTheme.typography.headlineSmall)
+        authors.forEach { author ->
+            Button(
+                onClick = { onAuthorSelected(author) },
+                modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)
+            ) {
+                Text(text = author)
             }
-        },
-        singleLine = true,
-        shape = RectangleShape, // The TextFiled has rounded corners top left and right by defaul
-    )
+        }
+    }
 }
 
 //@Preview(showBackground = true)
