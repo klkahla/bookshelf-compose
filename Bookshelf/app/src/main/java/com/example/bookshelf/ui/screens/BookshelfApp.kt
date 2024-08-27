@@ -28,10 +28,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.rememberModalBottomSheetState
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -59,7 +56,6 @@ import com.example.bookshelf.model.Book
 import com.example.bookshelf.model.ImageLinks
 import com.example.bookshelf.model.VolumeInfo
 import com.example.bookshelf.ui.theme.BookshelfTheme
-import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -67,7 +63,6 @@ fun BookshelfApp(modifier: Modifier = Modifier) {
     val navController = rememberNavController()
     val currentBackStackEntry by navController.currentBackStackEntryAsState()
     val showBackButton = currentBackStackEntry?.destination?.route != "bookList"
-    val scope = rememberCoroutineScope()
 
     val bookshelfViewModel: BookshelfViewModel = viewModel(factory = BookshelfViewModel.Factory)
     var searchTerm by remember {mutableStateOf("")}
@@ -322,39 +317,24 @@ fun SearchAndFilterView(
     }
 }
 
+@Preview(showBackground = true)
 @Composable
-fun FilterDrawer(authors: List<String>, onAuthorSelected: (String) -> Unit) {
-    Column(modifier = Modifier.padding(16.dp)) {
-        Text(text = "Filter by Author", style = MaterialTheme.typography.headlineSmall)
-        authors.forEach { author ->
-            Button(
-                onClick = { onAuthorSelected(author) },
-                modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)
-            ) {
-                Text(text = author)
-            }
-        }
+fun LoadingScreenPreview() {
+    BookshelfTheme {
+        LoadingScreen(
+            Modifier
+                .fillMaxSize()
+                .size(200.dp))
     }
 }
 
-//@Preview(showBackground = true)
-//@Composable
-//fun LoadingScreenPreview() {
-//    BookshelfTheme {
-//        LoadingScreen(
-//            Modifier
-//                .fillMaxSize()
-//                .size(200.dp))
-//    }
-//}
-//
-//@Preview(showBackground = true)
-//@Composable
-//fun ErrorScreenPreview() {
-//    BookshelfTheme {
-//        ErrorScreen({}, Modifier.fillMaxSize())
-//    }
-//}
+@Preview(showBackground = true)
+@Composable
+fun ErrorScreenPreview() {
+    BookshelfTheme {
+        ErrorScreen({}, Modifier.fillMaxSize())
+    }
+}
 
 @Preview(showBackground = true)
 @Composable
