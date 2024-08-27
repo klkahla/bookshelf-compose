@@ -15,8 +15,13 @@ data class Book(
 @Serializable
 data class VolumeInfo (
     val title: String = "",
+    val subtitle: String? = "",
+    val description: String? = "",
     val authors: List<String> = listOf(),
-    val imageLinks: ImageLinks? = null
+    val publisher: String? = "",
+    val publishedDate: String? = "",
+    val imageLinks: ImageLinks? = null,
+    val canonicalVolumeLink: String? = ""
 )
 
 @Serializable
