@@ -13,12 +13,15 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -66,7 +69,6 @@ fun BookshelfApp(modifier: Modifier = Modifier) {
 
     val bookshelfViewModel: BookshelfViewModel = viewModel(factory = BookshelfViewModel.Factory)
     var searchTerm by remember {mutableStateOf("")}
-    val authors = bookshelfViewModel.authors
     var selectedAuthor by remember { mutableStateOf<String?>(null) }
     var showDialog by remember { mutableStateOf(false) }
 
@@ -127,29 +129,49 @@ fun BookshelfApp(modifier: Modifier = Modifier) {
             }
         }
         if (showDialog) {
+            var tempSelectedAuthor by remember { mutableStateOf(selectedAuthor) }
             AlertDialog(
                 onDismissRequest = { showDialog = false },
-                title = { Text(text = "Filter by Author") },
+                title = { Text(text = "Filter Books") },
                 text = {
-                    LazyColumn {
-                        items(authors.sorted()) { author ->
-                            Button(
-                                onClick = {
-                                    selectedAuthor = author
-                                    showDialog = false
-                                    // Apply filter logic here
-                                },
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(vertical = 4.dp)
-                            ) {
-                                Text(text = author)
+                    var expanded by remember { mutableStateOf(false) }
+                    Box {
+                        OutlinedTextField(
+                            value = tempSelectedAuthor ?: "Select Author",
+                            onValueChange = {},
+                            readOnly = true,
+                            trailingIcon = {
+                                Icon(
+                                    imageVector = Icons.Default.ArrowDropDown,
+                                    contentDescription = null,
+                                    modifier = Modifier.clickable { expanded = true }
+                                )
+                            },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clickable { expanded = true }
+                        )
+                        DropdownMenu(
+                            expanded = expanded,
+                            onDismissRequest = { expanded = false }
+                        ) {
+                            bookshelfViewModel.authors.sorted().forEach { author ->
+                                DropdownMenuItem(
+                                    text = { Text(text = author) },
+                                    onClick = {
+                                        tempSelectedAuthor = author
+                                        expanded = false
+                                    }
+                                )
                             }
                         }
                     }
                 },
                 confirmButton = {
-                    Button(onClick = { showDialog = false }) {
+                    Button(onClick = {
+                        selectedAuthor = tempSelectedAuthor
+                        showDialog = false
+                    }) {
                         Text("Close")
                     }
                 },
