@@ -121,10 +121,14 @@ fun BookDetailPreview() {
     BookshelfTheme {
         val mockData =
             Book(
-                it.toString() ,
+                "Title one" ,
                 VolumeInfo(
-                    "Lorem Ipsum - $it",
+                    "Lorem Ipsum - title one",
+                    subtitle = "",
+                    description = "",
                     listOf("An author"),
+                    publisher = "",
+                    publishedDate = "2022-08-16",
                     ImageLinks("")
                 )
             )

@@ -272,7 +272,11 @@ fun ResultScreenPreview() {
                 it.toString() ,
                 VolumeInfo(
                     "Lorem Ipsum - $it",
+                    subtitle = "",
+                    description = "",
                     listOf("An author"),
+                    publisher = "",
+                    publishedDate = "2022-08-16",
                     ImageLinks("")
                 )
             )
