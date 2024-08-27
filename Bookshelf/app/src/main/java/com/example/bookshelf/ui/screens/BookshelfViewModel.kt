@@ -25,6 +25,9 @@ class BookshelfViewModel(private val bookshelfRepository: BookshelfRepository): 
     var bookshelfUIState: BookshelfUIState by mutableStateOf(BookshelfUIState.Loading)
         private set
 
+    var authors: List<String> by mutableStateOf(emptyList())
+        private set
+
     init {
         getBookshelf("")
     }
@@ -38,13 +41,13 @@ class BookshelfViewModel(private val bookshelfRepository: BookshelfRepository): 
             bookshelfUIState = BookshelfUIState.Loading
             bookshelfUIState = try {
                 val books = bookshelfRepository.getBookshelf(searchTerm)
-                val authors: MutableList<String> = mutableListOf()
+                val authorsSet: MutableList<String> = mutableListOf()
                 books.forEach {
                     it.volumeInfo?.authors?.let { listOfAuthors ->
-                        authors.addAll(listOfAuthors)
+                        authorsSet.addAll(listOfAuthors)
                     }
                 }
-                println("authors: $authors")
+                authors = authorsSet.toList()
                 BookshelfUIState.Success(bookshelfRepository.getBookshelf(searchTerm))
             } catch (e: IOException) {
                 BookshelfUIState.Error
