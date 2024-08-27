@@ -140,6 +140,7 @@ fun BookshelfApp(modifier: Modifier = Modifier) {
                             value = tempSelectedAuthor ?: "Select Author",
                             onValueChange = {},
                             readOnly = true,
+                            enabled = false,
                             trailingIcon = {
                                 Icon(
                                     imageVector = Icons.Default.ArrowDropDown,
@@ -172,7 +173,7 @@ fun BookshelfApp(modifier: Modifier = Modifier) {
                         selectedAuthor = tempSelectedAuthor
                         showDialog = false
                     }) {
-                        Text("Close")
+                        Text("Apply Filters")
                     }
                 },
                 dismissButton = {
