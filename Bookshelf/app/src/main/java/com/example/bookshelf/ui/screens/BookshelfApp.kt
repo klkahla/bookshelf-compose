@@ -13,6 +13,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.AlertDialog
@@ -66,6 +67,7 @@ fun BookshelfApp(modifier: Modifier = Modifier) {
 
     val title = when (currentBackStackEntry?.destination?.route) {
         Routes.BOOK_DETAIL -> "Book Details"
+        Routes.ABOUT -> "About"
         else -> stringResource(R.string.app_name)
     }
 
@@ -89,6 +91,13 @@ fun BookshelfApp(modifier: Modifier = Modifier) {
                         IconButton(onClick = { navController.popBackStack() }) {
                             Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
                         }
+                    }
+                },
+                actions = {
+                    IconButton(onClick = {
+                        navController.navigate(Routes.ABOUT)
+                    }) {
+                        Icon(Icons.Default.Info, contentDescription = "About")
                     }
                 }
             )
@@ -127,6 +136,9 @@ fun BookshelfApp(modifier: Modifier = Modifier) {
                             book = book
                         )
                     }
+                }
+                composable(Routes.ABOUT) {
+                    AboutScreen()
                 }
             }
         }
