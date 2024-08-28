@@ -33,14 +33,14 @@ class BookshelfViewModel(private val bookshelfRepository: BookshelfRepository): 
     }
 
     fun getBookshelf(searchTerm: String) {
-        var searchTerm = searchTerm
-        if (searchTerm.isEmpty()) {
-            searchTerm = "%20"
+        var searchQuery = searchTerm
+        if (searchQuery.isEmpty()) {
+            searchQuery = "%20"
         }
         viewModelScope.launch {
             bookshelfUIState = BookshelfUIState.Loading
             bookshelfUIState = try {
-                val books = bookshelfRepository.getBookshelf(searchTerm)
+                val books = bookshelfRepository.getBookshelf(searchQuery)
                 val authorsSet: MutableList<String> = mutableListOf()
                 books.forEach {
                     it.volumeInfo?.authors?.let { listOfAuthors ->

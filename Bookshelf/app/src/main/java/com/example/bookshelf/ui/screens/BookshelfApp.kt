@@ -5,11 +5,9 @@ package com.example.bookshelf.ui.screens
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -35,7 +33,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -61,7 +58,6 @@ import com.example.bookshelf.model.VolumeInfo
 import com.example.bookshelf.ui.navigation.Routes
 import com.example.bookshelf.ui.theme.BookshelfTheme
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BookshelfApp(modifier: Modifier = Modifier) {
     val navController = rememberNavController()
@@ -338,7 +334,7 @@ fun SearchAndFilterView(
                 }
             },
             singleLine = true,
-            shape = RectangleShape, // The TextFiled has rounded corners top left and right by defaul
+            shape = RectangleShape, // The TextFiled has rounded corners top left and right by default
         )
         IconButton(onClick = onFilterClick) {
             Icon(Icons.Default.Menu, contentDescription = "Filter")
