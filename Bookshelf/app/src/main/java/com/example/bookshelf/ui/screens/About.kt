@@ -44,7 +44,7 @@ fun AboutScreen() {
                 )
                 Spacer(modifier = Modifier.height(16.dp))
                 Text(
-                    text = "BookshelfApp\nVersion 1.0\n\nThis app helps you manage your book collection.",
+                    text = "BookshelfApp\nVersion 1.0\n\nThis app let's you browse the Google Books collection.",
                     style = MaterialTheme.typography.bodyLarge,
                     textAlign = TextAlign.Center
                 )
