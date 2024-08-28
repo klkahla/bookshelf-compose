@@ -1,5 +1,7 @@
 package com.example.bookshelf.ui.screens
 
+import android.content.Intent
+import android.net.Uri
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -25,6 +27,7 @@ import com.example.bookshelf.model.Book
 import com.example.bookshelf.model.ImageLinks
 import com.example.bookshelf.model.VolumeInfo
 import com.example.bookshelf.ui.theme.BookshelfTheme
+import com.example.bookshelf.utils.Utils
 
 @Composable
 fun BookDetail(book: Book, modifier: Modifier = Modifier) {
@@ -64,9 +67,9 @@ fun BookDetail(book: Book, modifier: Modifier = Modifier) {
                 .crossfade(true)
                 .build(),
             contentDescription = book.volumeInfo?.title,
-            contentScale = ContentScale.Crop,
+            contentScale = ContentScale.Fit,
             modifier = Modifier
-                .height(200.dp)
+                .height(400.dp)
                 .fillMaxWidth()
                 .padding(16.dp)
                 .clip(MaterialTheme.shapes.medium) // Apply rounded corners
@@ -102,9 +105,22 @@ fun BookDetail(book: Book, modifier: Modifier = Modifier) {
         }
 
         // Purchase Button
-        book.volumeInfo?.canonicalVolumeLink?.let { purchaseLink ->
+        book.volumeInfo?.title?.let { bookTitle ->
+            val context = LocalContext.current
             Button(
-                onClick = { /* Open purchase link */ },
+                onClick = {
+                    val amazonUri = Uri.parse("https://www.amazon.com/s?k=${Uri.encode(bookTitle)}")
+                    val intent = Intent(Intent.ACTION_VIEW, amazonUri)
+                    val packageManager = context.packageManager
+                    val amazonAppPackage = "com.amazon.mShop.android.shopping"
+
+                    // Check if Amazon app is installed
+                    if (Utils.isPackageInstalled(amazonAppPackage, packageManager)) {
+                        intent.setPackage(amazonAppPackage)
+                    }
+
+                    context.startActivity(intent)
+                },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(top = 16.dp)

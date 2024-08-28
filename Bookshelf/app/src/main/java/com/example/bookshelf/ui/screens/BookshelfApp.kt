@@ -67,6 +67,11 @@ fun BookshelfApp(modifier: Modifier = Modifier) {
     val currentBackStackEntry by navController.currentBackStackEntryAsState()
     val showBackButton = currentBackStackEntry?.destination?.route != "bookList"
 
+    val title = when (currentBackStackEntry?.destination?.route) {
+        "bookDetail/{bookId}" -> "Book Details"
+        else -> stringResource(R.string.app_name)
+    }
+
     val bookshelfViewModel: BookshelfViewModel = viewModel(factory = BookshelfViewModel.Factory)
     var searchTerm by remember {mutableStateOf("")}
     var selectedAuthor by remember { mutableStateOf<String?>(null) }
@@ -78,7 +83,7 @@ fun BookshelfApp(modifier: Modifier = Modifier) {
             TopAppBar(
                 title = {
                     Text(
-                        stringResource(R.string.app_name),
+                        title,
                         style = MaterialTheme.typography.headlineMedium
                     )
                 },
