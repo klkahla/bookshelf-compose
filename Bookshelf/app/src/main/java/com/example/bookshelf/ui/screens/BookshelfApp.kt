@@ -58,6 +58,7 @@ import com.example.bookshelf.R
 import com.example.bookshelf.model.Book
 import com.example.bookshelf.model.ImageLinks
 import com.example.bookshelf.model.VolumeInfo
+import com.example.bookshelf.ui.navigation.Routes
 import com.example.bookshelf.ui.theme.BookshelfTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -68,7 +69,7 @@ fun BookshelfApp(modifier: Modifier = Modifier) {
     val showBackButton = currentBackStackEntry?.destination?.route != "bookList"
 
     val title = when (currentBackStackEntry?.destination?.route) {
-        "bookDetail/{bookId}" -> "Book Details"
+        Routes.BOOK_DETAIL -> "Book Details"
         else -> stringResource(R.string.app_name)
     }
 
@@ -104,7 +105,7 @@ fun BookshelfApp(modifier: Modifier = Modifier) {
             color = MaterialTheme.colorScheme.background
         ) {
             NavHost(navController = navController, startDestination = "bookList") {
-                composable("bookList") {
+                composable(Routes.BOOK_LIST) {
                     BookList(
                         bookshelfViewModel.bookshelfUIState,
                         searchTerm = searchTerm,
@@ -122,7 +123,7 @@ fun BookshelfApp(modifier: Modifier = Modifier) {
                         selectedAuthor = selectedAuthor
                     )
                 }
-                composable("bookDetail/{bookId}") { backStackEntry ->
+                composable(Routes.BOOK_DETAIL) { backStackEntry ->
                     val bookId = backStackEntry.arguments?.getString("bookId", "-1").toString()
                     val book = bookshelfViewModel.getBookById(bookId)
                     if (book != null) {
