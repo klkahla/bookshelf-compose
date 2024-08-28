@@ -48,10 +48,12 @@ class BookshelfViewModel(private val bookshelfRepository: BookshelfRepository): 
                     }
                 }
                 authors = authorsSet.toList()
-                BookshelfUIState.Success(bookshelfRepository.getBookshelf(searchTerm))
+                BookshelfUIState.Success(books)
             } catch (e: IOException) {
                 BookshelfUIState.Error
             } catch (e: HttpException) {
+                BookshelfUIState.Error
+            } catch (e: RuntimeException) {
                 BookshelfUIState.Error
             }
         }

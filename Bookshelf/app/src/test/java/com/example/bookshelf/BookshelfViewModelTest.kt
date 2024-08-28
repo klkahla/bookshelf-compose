@@ -8,6 +8,7 @@ import com.example.bookshelf.ui.screens.BookshelfUIState
 import com.example.bookshelf.ui.screens.BookshelfViewModel
 import junit.framework.TestCase.assertTrue
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
@@ -19,6 +20,7 @@ import org.junit.Test
 import org.mockito.Mock
 import org.mockito.Mockito.`when`
 import org.mockito.MockitoAnnotations
+import java.io.IOException
 
 class BookshelfViewModelTest {
 
@@ -29,6 +31,7 @@ class BookshelfViewModelTest {
 
     @Mock
     private lateinit var bookshelfRepository: BookshelfRepository
+    @OptIn(ExperimentalCoroutinesApi::class)
     private val testDispatcher = UnconfinedTestDispatcher()
 
     @Before
@@ -59,5 +62,31 @@ class BookshelfViewModelTest {
         assertTrue(viewModel.bookshelfUIState is BookshelfUIState.Success)
         val successState = viewModel.bookshelfUIState as BookshelfUIState.Success
         assertTrue(successState.bookshelfList == books)
+    }
+
+    @Test
+    fun `getBookshelf returns error`() = runTest {
+        // Given an RunTimeException is thrown by the repository
+        `when`(bookshelfRepository.getBookshelf(" ")).thenThrow(RuntimeException::class.java)
+
+        // When calling getBookshelf
+        viewModel.getBookshelf(" ")
+
+        // Then the bookshelfUIState should be Error
+        assertTrue(viewModel.bookshelfUIState is BookshelfUIState.Error)
+    }
+
+    @Test
+    fun `getBookshelf returns empty list`() = runTest {
+        // Given an empty list of books
+        `when`(bookshelfRepository.getBookshelf(" ")).thenReturn(emptyList())
+
+        // When calling getBookshelf
+        viewModel.getBookshelf(" ")
+
+        // Then the bookshelfUIState should be Success with an empty list
+        assertTrue(viewModel.bookshelfUIState is BookshelfUIState.Success)
+        val successState = viewModel.bookshelfUIState as BookshelfUIState.Success
+        assertTrue(successState.bookshelfList.isEmpty())
     }
 }
